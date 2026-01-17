@@ -50,7 +50,29 @@
             qrbox: 250
           },
           qrCodeMessage => {
-            alert("QR leído: " + qrCodeMessage);
+            const evento = document.getElementById("evento").value;
+const fecha = document.getElementById("fecha").value;
+const hora = new Date().toLocaleTimeString();
+
+if (!evento || !fecha) {
+  alert("Primero escribe el evento y la fecha");
+  return;
+}
+
+const registro = {
+  qr: qrCodeMessage,
+  evento: evento,
+  fecha: fecha,
+  hora: hora
+};
+
+console.log(registro);
+alert(
+  "Entrada registrada\n" +
+  "QR: " + qrCodeMessage + "\n" +
+  "Hora: " + hora
+);
+
             html5QrCode.stop();
           }
         );
@@ -70,6 +92,7 @@
 <input type="date" id="fecha"><br><br>
 
 </html>
+
 
 
 
