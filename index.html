@@ -1,55 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Escanear QR</title>
+  <meta charset="UTF-8">
+  <title>Escanear QR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- LIBRERÍA QR -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- Librería QR -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 20px;
-        }
-        #reader {
-            width: 300px;
-            margin: auto;
-        }
-    </style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #reader {
+      width: 300px;
+      margin: auto;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Escanear QR</h1>
+  <h2>Escanear QR</h2>
+  <div id="reader"></div>
 
-    <!-- CONTENEDOR OBLIGATORIO -->
-    <div id="reader"></div>
+  <script>
+    const html5QrCode = new Html5Qrcode("reader");
 
-    <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            alert("QR detectado: " + decodedText);
-        }
-
-        const html5QrCode = new Html5Qrcode("reader");
-
-        Html5Qrcode.getCameras().then(devices => {
-            if (devices && devices.length) {
-                html5QrCode.start(
-                    devices[0].id,
-                    {
-                        fps: 10,
-                        qrbox: 250
-                    },
-                    onScanSuccess
-                );
-            }
-        }).catch(err => {
-            console.error(err);
-        });
-    </script>
+    html5QrCode.start(
+      { facingMode: "environment" }, // 👈 CÁMARA TRASERA
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      qrCodeMessage => {
+        alert("QR leído: " + qrCodeMessage);
+        html5QrCode.stop(); // opcional: detener tras leer
+      },
+      errorMessage => {
+        // errores de lectura (no graves)
+      }
+    );
+  </script>
 
 </body>
 </html>
+
 
 
