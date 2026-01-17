@@ -5,7 +5,6 @@
   <title>Escanear QR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Librería QR -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
@@ -17,34 +16,53 @@
       width: 300px;
       margin: auto;
     }
+    button {
+      margin-top: 15px;
+      padding: 10px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
 
   <h2>Escanear QR</h2>
   <div id="reader"></div>
+  <button onclick="startScanner()">Iniciar con cámara trasera</button>
 
   <script>
     const html5QrCode = new Html5Qrcode("reader");
 
-    html5QrCode.start(
-      { facingMode: "environment" }, // 👈 CÁMARA TRASERA
-      {
-        fps: 10,
-        qrbox: 250
-      },
-      qrCodeMessage => {
-        alert("QR leído: " + qrCodeMessage);
-        html5QrCode.stop(); // opcional: detener tras leer
-      },
-      errorMessage => {
-        // errores de lectura (no graves)
+    async function startScanner() {
+      const devices = await Html5Qrcode.getCameras();
+
+      if (devices && devices.length) {
+        // 🔥 Busca cámara trasera
+        const backCamera = devices.find(device =>
+          device.label.toLowerCase().includes("back") ||
+          device.label.toLowerCase().includes("rear") ||
+          device.label.toLowerCase().includes("trasera")
+        ) || devices[devices.length - 1]; // fallback
+
+        html5QrCode.start(
+          backCamera.id,
+          {
+            fps: 10,
+            qrbox: 250
+          },
+          qrCodeMessage => {
+            alert("QR leído: " + qrCodeMessage);
+            html5QrCode.stop();
+          }
+        );
+      } else {
+        alert("No se encontraron cámaras");
       }
-    );
+    }
   </script>
 
 </body>
 </html>
+
 
 
 
