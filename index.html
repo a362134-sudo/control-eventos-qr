@@ -1,58 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Control de Eventos QR</title>
+    <meta charset="UTF-8">
+    <title>Escanear QR</title>
 
-  <script src="https://unpkg.com/html5-qrcode"></script>
+    <!-- LIBRERÍA QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyA3xhATSu5AfSTGVrAvC1Y8I9m0BqK4GZM",
-  authDomain: "control-eventos-qr.firebaseapp.com",
-  projectId: "control-eventos-qr",
-  storageBucket: "control-eventos-qr.firebasestorage.app",
-  messagingSenderId: "358678513736",
-  appId: "1:358678513736:web:0680b5baaec937211c707d"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.onload = () => {
-      const qr = new Html5Qrcode("reader");
-      qr.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        async (text) => {
-          const datos = text.split("|");
-          await addDoc(collection(db, "registros"), {
-            nombre: datos[0],
-            matricula: datos[1],
-            evento: "Evento de prueba",
-            hora: new Date()
-          });
-          alert("Registro guardado");
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
         }
-      );
-    };
-  </script>
+        #reader {
+            width: 300px;
+            margin: auto;
+        }
+    </style>
 </head>
-
 <body>
-  <h2>Escanear QR</h2>
-  <div id="reader" style="width:300px"></div>
+
+    <h1>Escanear QR</h1>
+
+    <!-- CONTENEDOR OBLIGATORIO -->
+    <div id="reader"></div>
+
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            alert("QR detectado: " + decodedText);
+        }
+
+        const html5QrCode = new Html5Qrcode("reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                html5QrCode.start(
+                    devices[0].id,
+                    {
+                        fps: 10,
+                        qrbox: 250
+                    },
+                    onScanSuccess
+                );
+            }
+        }).catch(err => {
+            console.error(err);
+        });
+    </script>
+
 </body>
 </html>
+
+
