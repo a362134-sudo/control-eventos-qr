@@ -66,24 +66,19 @@ const registro = {
   hora: hora
 };
 
-fetch("https://script.google.com/macros/s/AKfycbzIGDgPNDGt2viSzmih-5XDhnFC__FSORKTp_xbXZ3PFy8Zq0nuZeMh1A7ae4CX-e3q/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    evento: evento,
-    fecha: fecha,
-    matricula: qrCodeMessage,
-    hora: hora
+const url =
+  "https://script.google.com/macros/s/AKfycbzIGDgPNDGt2viSzmih-5XDhnFC__FSORKTp_xbXZ3PFy8Zq0nuZeMh1A7ae4CX-e3q/exec" +
+  "?matricula=" + encodeURIComponent(qrCodeMessage);
+
+fetch(url)
+  .then(res => res.text())
+  .then(txt => {
+    alert(txt);
   })
-})
-.then(() => {
-  alert("Entrada registrada correctamente");
-})
-.catch(() => {
-  alert("Error al registrar");
-});
+  .catch(() => {
+    alert("Error al registrar");
+  });
+
 
 
             html5QrCode.stop();
@@ -105,6 +100,7 @@ fetch("https://script.google.com/macros/s/AKfycbzIGDgPNDGt2viSzmih-5XDhnFC__FSOR
 <input type="date" id="fecha"><br><br>
 
 </html>
+
 
 
 
