@@ -68,7 +68,9 @@ const registro = {
 
 const url =
   "https://script.google.com/macros/s/AKfycbzYJS1vYQ9ewr__4PjlB7gi6IcLJO7fT6mZb4j2XZWsDidJOVoPHrS3g-G-edlbU9j_/exec" +
-  "?matricula=" + encodeURIComponent(qrCodeMessage);
+  "?matricula=" + encodeURIComponent(qrCodeMessage) +
+  "&evento=" + encodeURIComponent(evento) +
+  "&fecha=" + encodeURIComponent(fecha);
 
 fetch(url)
   .then(res => res.text())
@@ -99,6 +101,7 @@ fetch(url)
 </body>
   
 </html>
+
 
 
 
