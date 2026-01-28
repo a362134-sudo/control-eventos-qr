@@ -23,65 +23,67 @@
     }
   </style>
 </head>
+
 <body>
 
   <h2>Escanear QR</h2>
+
+  <!-- 🔢 CONTADOR -->
+  <h3>Personas registradas: <span id="contador">0</span></h3>
+
   <div id="reader"></div>
   <button onclick="startScanner()">Iniciar con cámara trasera</button>
+
+  <h3>Datos del evento</h3>
+
+  <label>Nombre del evento:</label><br>
+  <input type="text" id="evento" placeholder="Ej. Conferencia 2026"><br><br>
+
+  <label>Fecha del evento:</label><br>
+  <input type="date" id="fecha"><br><br>
 
   <script>
     const html5QrCode = new Html5Qrcode("reader");
 
+    // 📸 ESCÁNER
     async function startScanner() {
       const devices = await Html5Qrcode.getCameras();
 
       if (devices && devices.length) {
-        // 🔥 Busca cámara trasera
-        const backCamera = devices.find(device =>
-          device.label.toLowerCase().includes("back") ||
-          device.label.toLowerCase().includes("rear") ||
-          device.label.toLowerCase().includes("trasera")
-        ) || devices[devices.length - 1]; // fallback
+        const backCamera =
+          devices.find(d =>
+            d.label.toLowerCase().includes("back") ||
+            d.label.toLowerCase().includes("rear") ||
+            d.label.toLowerCase().includes("trasera")
+          ) || devices[devices.length - 1];
 
         html5QrCode.start(
           backCamera.id,
-          {
-            fps: 10,
-            qrbox: 250
-          },
+          { fps: 10, qrbox: 250 },
           qrCodeMessage => {
             const evento = document.getElementById("evento").value;
-const fecha = document.getElementById("fecha").value;
-const hora = new Date().toLocaleTimeString();
+            const fecha = document.getElementById("fecha").value;
 
-if (!evento || !fecha) {
-  alert("Primero escribe el evento y la fecha");
-  return;
-}
+            if (!evento || !fecha) {
+              alert("Primero escribe el evento y la fecha");
+              return;
+            }
 
-const registro = {
-  qr: qrCodeMessage,
-  evento: evento,
-  fecha: fecha,
-  hora: hora
-};
+            const url =
+              "https://script.google.com/macros/s/AKfycbzYJS1vYQ9ewr__4PjlB7gi6IcLJO7fT6mZb4j2XZWsDidJOVoPHrS3g-G-edlbU9j_/exec" +
+              "?matricula=" + encodeURIComponent(qrCodeMessage) +
+              "&evento=" + encodeURIComponent(evento) +
+              "&fecha=" + encodeURIComponent(fecha);
 
-const url =
-  "https://script.google.com/macros/s/AKfycbzYJS1vYQ9ewr__4PjlB7gi6IcLJO7fT6mZb4j2XZWsDidJOVoPHrS3g-G-edlbU9j_/exec" +
-  "?matricula=" + encodeURIComponent(qrCodeMessage) +
-  "&evento=" + encodeURIComponent(evento) +
-  "&fecha=" + encodeURIComponent(fecha);
-
-fetch(url)
-  .then(res => res.text())
-  .then(txt => {
-    alert(txt);
-  })
-  .catch(() => {
-    alert("Error al registrar");
-  });
-
-
+            fetch(url)
+              .then(res => res.text())
+              .then(txt => {
+                alert(txt);
+                actualizarContador(); // 🔄 actualizar al registrar
+              })
+              .catch(() => {
+                alert("Error al registrar");
+              });
 
             html5QrCode.stop();
           }
@@ -90,18 +92,26 @@ fetch(url)
         alert("No se encontraron cámaras");
       }
     }
+
+    // 🔢 CONTADOR EN TIEMPO REAL
+    function actualizarContador() {
+      fetch("https://script.google.com/macros/s/AKfycbzYJS1vYQ9ewr__4PjlB7gi6IcLJO7fT6mZb4j2XZWsDidJOVoPHrS3g-G-edlbU9j_/exec?contador=true")
+        .then(res => res.text())
+        .then(total => {
+          document.getElementById("contador").innerText = total;
+        })
+        .catch(err => {
+          console.log("Error al obtener contador", err);
+        });
+    }
+
+    // ⏱️ ACTUALIZACIÓN AUTOMÁTICA
+    actualizarContador();
+    setInterval(actualizarContador, 3000);
   </script>
-<h3>Datos del evento</h3>
 
-<label>Nombre del evento:</label><br>
-<input type="text" id="evento" placeholder="Ej. Conferencia 2026"><br><br>
-
-<label>Fecha del evento:</label><br>
-<input type="date" id="fecha"><br><br>
 </body>
-  
 </html>
-
 
 
 
